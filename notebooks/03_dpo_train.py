@@ -81,7 +81,7 @@ from peft import PeftModel
 model, tokenizer = FastLanguageModel.from_pretrained(
     model_name=BASE_MODEL,
     max_seq_length=MAX_LEN,
-    dtype=None,
+    dtype=torch.float16,
     load_in_4bit=True,
 )
 if tokenizer.pad_token is None:
@@ -104,7 +104,7 @@ model = FastLanguageModel.get_peft_model(
         "q_proj", "k_proj", "v_proj", "o_proj",
         "gate_proj", "up_proj", "down_proj",
     ],
-    use_gradient_checkpointing="unsloth",
+    use_gradient_checkpointing=True,
     random_state=42,
     use_rslora=False,
     loftq_config=None,
@@ -137,8 +137,8 @@ dpo_config = DPOConfig(
     logging_steps=10,
     save_strategy="no",
     optim="adamw_8bit",
-    bf16=torch.cuda.is_bf16_supported(),
-    fp16=not torch.cuda.is_bf16_supported(),
+    bf16=False,
+    fp16=True,
     seed=42,
     loss_type="sigmoid",         # DPO standard (alternatives: ipo, hinge, kto)
     report_to="none",

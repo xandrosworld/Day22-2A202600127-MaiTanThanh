@@ -41,7 +41,7 @@ else:  # BIGGPU
     PER_DEVICE_BATCH = 2
     GRAD_ACCUM = 4
 
-SFT_DATASET = os.environ.get("SFT_DATASET", "5CD-AI/Vietnamese-alpaca-cleaned")
+SFT_DATASET = os.environ.get("SFT_DATASET", "saillab/alpaca-vietnamese-cleaned")
 SFT_SLICE = 1000
 NUM_EPOCHS = 1
 
@@ -83,6 +83,10 @@ model, tokenizer = FastLanguageModel.from_pretrained(
 # Critical for batch training — Qwen tokenizers ship without pad token.
 if tokenizer.pad_token is None:
     tokenizer.pad_token = tokenizer.eos_token
+if getattr(tokenizer, "chat_template", None) is None:
+    tokenizer.chat_template = "{% for message in messages %}\n{% if message['role'] == 'system' %}<|im_start|>system\n{{ message['content'] }}<|im_end|>\n{% elif message['role'] == 'user' %}<|im_start|>user\n{{ message['content'] }}<|im_end|>\n{% elif message['role'] == 'assistant' %}<|im_start|>assistant\n{{ message['content'] }}<|im_end|>\n{% endif %}\n{% endfor %}\n{% if add_generation_prompt %}<|im_start|>assistant\n{% endif %}"
+    print("Set tokenizer.chat_template = ChatML/Qwen fallback")
+
     print("Set tokenizer.pad_token = eos_token")
 
 # %%
@@ -106,7 +110,7 @@ print(f"Trainable params: {sum(p.numel() for p in model.parameters() if p.requir
 # %% [markdown]
 # ## 2. Load + format VN Alpaca slice
 #
-# `5CD-AI/Vietnamese-alpaca-cleaned` is a 50k-row VN Alpaca translation. Lab 21
+# `saillab/alpaca-vietnamese-cleaned` is a 50k-row VN Alpaca translation. Lab 21
 # uses 1k slice for the demo run; we match that exactly so reward gap is comparable.
 
 # %%

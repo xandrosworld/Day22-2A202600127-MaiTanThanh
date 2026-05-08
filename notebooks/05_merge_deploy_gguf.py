@@ -59,16 +59,19 @@ from peft import PeftModel
 model, tokenizer = FastLanguageModel.from_pretrained(
     model_name=BASE_MODEL,
     max_seq_length=MAX_LEN,
-    dtype=None,
+    dtype=torch.float16,
     load_in_4bit=True,
 )
 if tokenizer.pad_token is None:
     tokenizer.pad_token = tokenizer.eos_token
 
-# Stack SFT-mini → DPO adapters
-SFT_PATH = REPO_ROOT / "adapters" / "sft-mini"
-model = PeftModel.from_pretrained(model, str(SFT_PATH))
-print(f"Loaded SFT-mini adapter from {SFT_PATH}")
+if getattr(tokenizer, "chat_template", None) is None:
+    tokenizer.chat_template = "{% for message in messages %}\n{% if message['role'] == 'system' %}<|im_start|>system\n{{ message['content'] }}<|im_end|>\n{% elif message['role'] == 'user' %}<|im_start|>user\n{{ message['content'] }}<|im_end|>\n{% elif message['role'] == 'assistant' %}<|im_start|>assistant\n{{ message['content'] }}<|im_end|>\n{% endif %}\n{% endfor %}\n{% if add_generation_prompt %}<|im_start|>assistant\n{% endif %}"
+    print("Set tokenizer.chat_template = ChatML/Qwen fallback")
+
+# Load final DPO adapter. NB3 saves the aligned adapter to adapters/dpo.
+model = PeftModel.from_pretrained(model, str(DPO_PATH))
+print(f"Loaded DPO adapter from {DPO_PATH}")
 
 # %% [markdown]
 # > **Note:** The DPO adapter trained in NB3 stacks on top of SFT. To get a fully
@@ -113,7 +116,7 @@ from unsloth import FastLanguageModel as FLM
 model, tokenizer = FLM.from_pretrained(
     model_name=str(MERGED_PATH),
     max_seq_length=MAX_LEN,
-    dtype=None,
+    dtype=torch.float16,
     load_in_4bit=False,    # already merged; load full precision
 )
 

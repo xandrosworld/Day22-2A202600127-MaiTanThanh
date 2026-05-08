@@ -1,0 +1,8 @@
+{
+  "compute_tier": "T4",
+  "gguf_path": "/workspace/lab22/gguf/lab22-dpo-Q4_K_M.gguf",
+  "gguf_size_mb": 1929.9,
+  "quantization": "Q4_K_M",
+  "smoke_prompt": "Giải thích ngắn gọn 3 câu cách thuật toán Bubble sort hoạt động.",
+  "smoke_response": "1. Bubble Sort là một thuật toán sắp xếp có thể được thực hiện bằng cách lặp lại quá trình so sánh hai phần tử liên tiếp trong danh sách cho đến khi không còn phần tử nào phải so sánh. 2. Trong mỗi vòng lặp, phần tử lớn hơn được đẩy lên trên, cho đến khi phần tử cuối cùng trong danh sách được sắp xếp. 3. Điều này tiếp tục cho đến khi danh sách được sắp xếp. 4. Điều này có nghĩa là thuật toán này có thể mất nhiều thời gian hơn so với các thuật toán sắp xếp khác, nhưng nó có thể được sử dụng để sắp xếp danh sách có kích thước lớn. 5. Nó cũng có thể được sử dụng để sắp xếp danh sách có chứa phần tử trùng"
+}

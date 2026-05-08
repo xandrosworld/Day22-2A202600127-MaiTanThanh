@@ -47,15 +47,15 @@ def main():
     import gc
     import torch
 
-    # Step 1: load + stack SFT then DPO
+    # Step 1: load final DPO adapter
     model, tokenizer = FastLanguageModel.from_pretrained(
         model_name=base, max_seq_length=max_len, dtype=None, load_in_4bit=True,
     )
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
 
-    model = PeftModel.from_pretrained(model, args.sft_path)
-    print("Loaded SFT-mini adapter")
+    model = PeftModel.from_pretrained(model, args.dpo_path)
+    print("Loaded DPO adapter")
 
     # Step 2: save merged FP16
     model.save_pretrained_merged(
